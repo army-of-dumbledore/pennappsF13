@@ -6,5 +6,10 @@
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
+    <string name="new_pollio">+ New Pollio</string>
+    <string name="my_pollios">My Pollios</string>
+    <string name="friend_pollios">Friend Pollios</string>
+    <string name="public_pollios">Public Pollios</string>
+
 
 </resources>
