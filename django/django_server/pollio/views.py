@@ -26,19 +26,19 @@ def new_poll(request):
     question=request.REQUEST['question']
     choices=request.REQUEST['choices']
     pollees=request.REQUEST['pollees']
-    p = Poll(owner=User.objects.get(id=user), question=question, pub_date=datetime.datetime.now())
+    p = Poll(owner=User.objects.get(id=user), question=question, pub_date=datetime.datetime.now(), results_pending=False)
     p.save()
     for choice in choices.split('|'):
         p.choice_set.create(choice=choice, votes=0)
     for pollee in pollees.split('|'):
         p.pollees.add(User.objects.get(id=pollee))
     p.save()
-#    header = {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'}
-#    for pollee in p.pollees.all():
-#        url = 'https://android.googleapis.com/gcm/send'
-#        data = json.dumps({'registration_ids':[pollee.registration_id], 'data' : {'command' : 'poll', 'poll_id' : p.id}})
-#        req = urllib2.Request(url, data, header)
-#        result = json.loads(urllib2.urlopen(req).read())
+    header = {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'}
+    for pollee in p.pollees.all():
+        url = 'https://android.googleapis.com/gcm/send'
+        data = json.dumps({'registration_ids':[pollee.registration_id], 'dry-run' : True, 'data' : {'command' : 'poll', 'poll_id' : p.id}})
+        req = urllib2.Request(url, data, header)
+        result = json.loads(urllib2.urlopen(req).read())
     return HttpResponse(json.dumps({'poll_id': p.id}))
 
 def request_poll(request):
@@ -61,6 +61,7 @@ def request_results(request):
     response = {}
     for choice in p.choice_set.all(): 
 	response[choice.choice] = {'count' : choice.votes, 'backers' : [u.id for u in choice.backers.all()]}
+    p.results_pending = False
     return HttpResponse(json.dumps(response))
 
 def submit_vote(request):
@@ -75,10 +76,13 @@ def submit_vote(request):
     c.backers.add(User.objects.get(id=user))
     c.votes += 1
     c.save()
-    url = 'https://android.googleapis.com/gcm/send'
-    data = json.dumps({'registration_ids':[regid], 'dry-run' : False, 'data' : {'command' : 'results', 'poll_id' : poll_id}})
-    req = urllib2.Request(url, data, {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'})
-    result = json.loads(urllib2.urlopen(req).read())
+    if not(p.results_pending) : 
+	p.results_pending = True
+    	url = 'https://android.googleapis.com/gcm/send'
+    	header = {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'}
+    	data = json.dumps({'registration_ids':[regid], 'dry-run' : False, 'data' : {'command' : 'results', 'poll_id' : poll_id}})
+    	req = urllib2.Request(url, data, header)
+    	result = json.loads(urllib2.urlopen(req).read())
     return HttpResponse(json.dumps({'success' : 0}))
 
 

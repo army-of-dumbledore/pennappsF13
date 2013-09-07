@@ -13,6 +13,7 @@ class Poll(models.Model):
     question = models.CharField(max_length=200)
     pollees = models.ManyToManyField(User, related_name='pollees')
     pub_date = models.DateTimeField('date published')
+    results_pending = models.BooleanField()
     def __unicode__(self):
         return self.question
 
