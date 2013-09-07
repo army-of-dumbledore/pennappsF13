@@ -31,7 +31,7 @@ public class Picture_poll extends Activity {
 
 
     List<ImageView> viewList;
-    viewList.add()
+
 
 
     public void onCreate(Bundle savedInstanceState) {
