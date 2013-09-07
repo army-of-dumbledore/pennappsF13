@@ -1,7 +1,24 @@
 package edu.upenn.seas.pennapps.dumbledore.pollio;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -33,7 +50,7 @@ public class DemoActivity extends Activity {
      * Substitute you own sender ID here. This is the project number you got
      * from the API Console, as described in "Getting Started."
      */
-    String SENDER_ID = "Your-Sender-ID";
+    String SENDER_ID = "1033493645859";
 
     /**
      * Tag used on log messages.
@@ -65,6 +82,8 @@ public class DemoActivity extends Activity {
 
             if (regid.isEmpty()) {
                 registerInBackground();
+            } else {
+            	mDisplay.append("Saved ID: " + regid + "\n");
             }
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
@@ -98,6 +117,55 @@ public class DemoActivity extends Activity {
             }.execute(null, null, null);
         } else if (view == findViewById(R.id.clear)) {
             mDisplay.setText("");
+        } else if (view == findViewById(R.id.json)) {
+        	
+        	new AsyncTask<Void, Void, String>() {
+        		@Override
+        		protected String doInBackground(Void... params) {
+        			
+        			HttpClient httpclient = new DefaultHttpClient();
+        	        HttpResponse response;
+        	        String responseString = null;
+        	        try {
+        	            response = httpclient.execute(new HttpGet("http://158.130.62.140:8000/polls/"));
+        	            StatusLine statusLine = response.getStatusLine();
+        	            if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+        	                ByteArrayOutputStream out = new ByteArrayOutputStream();
+        	                response.getEntity().writeTo(out);
+        	                out.close();
+        	                responseString = out.toString();
+        	            } else{
+        	                //Closes the connection.
+        	                response.getEntity().getContent().close();
+        	                throw new IOException(statusLine.getReasonPhrase());
+        	            }
+        	        } catch (ClientProtocolException e) {
+        	            Log.e(TAG, "CPE: " + e.getMessage());
+        	        } catch (IOException e) {
+        	            Log.e(TAG, "IOE: " + e.getMessage());
+        	        }
+        	        
+        	        String result = "not parsed :(";
+        	        
+        	        try {
+						JSONObject jObject = new JSONObject(responseString);
+						
+						result = "something is " + jObject.getString("something") + "!\n";
+						
+					} catch (JSONException e) {
+						Log.e(TAG, "JsonE: " + e.getMessage());
+					}
+        	        
+        	        return responseString + " -> " + result;
+        			
+        		}
+        		
+        		@Override
+        		protected void onPostExecute(String msg) {
+        			mDisplay.append(msg);
+        		}
+        	}.execute(null, null, null);
+        	
         }
     }
     
@@ -194,7 +262,7 @@ public class DemoActivity extends Activity {
                     // so it can use GCM/HTTP or CCS to send messages to your app.
                     // The request to your server should be authenticated if your app
                     // is using accounts.
-                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
 
                     // For this demo: we don't need to send it because the device
                     // will send upstream messages to a server that echo back the

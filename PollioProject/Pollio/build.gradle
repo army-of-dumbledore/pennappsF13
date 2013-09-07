@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    compile 'com.google.android.gms:play-services:3.2.25' 
+    compile files('libs/gcm.jar')
     compile 'com.android.support:support-v4:13.0.+'
 }
 

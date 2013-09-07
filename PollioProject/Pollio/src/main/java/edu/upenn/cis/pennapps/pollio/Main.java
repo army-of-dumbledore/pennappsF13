@@ -2,7 +2,7 @@ package edu.upenn.cis.pennapps.pollio;
 
 import java.util.Locale;
 
-import android.app.ActionBar;
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,150 +19,92 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class Main extends FragmentActivity implements ActionBar.TabListener {
+public class Main extends Activity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which
-     * will keep every loaded fragment in memory. If this becomes too memory
-     * intensive, it may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        public class ListViewLoader extends ListActivity
+                implements LoaderManager.LoaderCallbacks<Cursor> {
 
-        // Set up the action bar.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            // This is the Adapter being used to display the list's data
+            SimpleCursorAdapter mAdapter;
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the app.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+            // These are the Contacts rows that we will retrieve
+            static final String[] PROJECTION = new String[] {ContactsContract.Data._ID,
+                    ContactsContract.Data.DISPLAY_NAME};
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+            // This is the select criteria
+            static final String SELECTION = "((" +
+                    ContactsContract.Data.DISPLAY_NAME + " NOTNULL) AND (" +
+                    ContactsContract.Data.DISPLAY_NAME + " != '' ))";
 
-        // When swiping between different sections, select the corresponding
-        // tab. We can also use ActionBar.Tab#select() to do this if we have
-        // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
+            protected void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+
+                // Create a progress bar to display while the list loads
+                ProgressBar progressBar = new ProgressBar(this);
+                progressBar.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+                progressBar.setIndeterminate(true);
+                getListView().setEmptyView(progressBar);
+
+                // Must add the progress bar to the root of the layout
+                ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+                root.addView(progressBar);
+
+                // For the cursor adapter, specify which columns go into which views
+                String[] fromColumns = {ContactsContract.Data.DISPLAY_NAME};
+                int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
+
+                // Create an empty adapter we will use to display the loaded data.
+                // We pass null for the cursor, then update it in onLoadFinished()
+                mAdapter = new SimpleCursorAdapter(this,
+                        android.R.layout.simple_list_item_1, null,
+                        fromColumns, toViews, 0);
+                setListAdapter(mAdapter);
+
+                // Prepare the loader.  Either re-connect with an existing one,
+                // or start a new one.
+                getLoaderManager().initLoader(0, null, this);
             }
-        });
 
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
-            // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-    
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a DummySectionFragment (defined as a static inner class
-            // below) with the page number as its lone argument.
-            Fragment fragment = new DummySectionFragment();
-            Bundle args = new Bundle();
-            args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
+            // Called when a new Loader needs to be created
+            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                // Now create and return a CursorLoader that will take care of
+                // creating a Cursor for the data being displayed.
+                return new CursorLoader(this, ContactsContract.Data.CONTENT_URI,
+                        PROJECTION, SELECTION, null, null);
             }
-            return null;
+
+            // Called when a previously created loader has finished loading
+            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                // Swap the new cursor in.  (The framework will take care of closing the
+                // old cursor once we return.)
+                mAdapter.swapCursor(data);
+            }
+
+            // Called when a previously created loader is reset, making the data unavailable
+            public void onLoaderReset(Loader<Cursor> loader) {
+                // This is called when the last Cursor provided to onLoadFinished()
+                // above is about to be closed.  We need to make sure we are no
+                // longer using it.
+                mAdapter.swapCursor(null);
+            }
+
+            @Override
+            public void onListItemClick(ListView l, View v, int position, long id) {
+                // Do something when a list item is clicked
+            }
         }
+
     }
 
-    /**
-     * A dummy fragment representing a section of the app, but that simply
-     * displays dummy text.
-     */
-    public static class DummySectionFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        public static final String ARG_SECTION_NUMBER = "section_number";
 
-        public DummySectionFragment() {
-        }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_dummy, container, false);
-            TextView dummyTextView = (TextView) rootView.findViewById(R.id.section_label);
-            dummyTextView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
 
 }
