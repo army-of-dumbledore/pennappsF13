@@ -13,7 +13,7 @@ def initialize(request):
     u = User(name=request.REQUEST['name'], registration_id=request.REQUEST['reg_id'])
     u.save()
     url = 'https://android.googleapis.com/gcm/send'
-    data = json.dumps({'registration_ids':[u.registration_id], 'dry-run' : True})
+    data = json.dumps({'registration_ids':[u.registration_id], 'dry-run' : False})
     req = urllib2.Request(url, data, {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'})
     result = json.loads(urllib2.urlopen(req).read())
     return HttpResponse(json.dumps(result))
