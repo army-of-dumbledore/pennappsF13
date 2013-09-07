@@ -5,7 +5,9 @@ from django.contrib import admin
 
 class ChoiceInline(admin.TabularInline):
     model = Choice
-    extra = 3
+    fieldsets = [
+        (None,               {'fields': ['choice', 'backers', 'votes']}),
+    ]
 
 class UserAdmin(admin.ModelAdmin):
     fieldsets = [

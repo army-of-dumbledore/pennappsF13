@@ -22,16 +22,23 @@ def initialize(request):
     return HttpResponse(json.dumps({'user_id' : u.id}))
 
 def new_poll(request): 
-    user=request.REQUEST['user']
+    user=request.REQUEST['user_id']
     question=request.REQUEST['question']
-    choice_string=request.REQUEST['choice_string']
-#    p = Poll(owner=User.objects.get(id=user), question=question, pub_date=datetime.datetime.now())
-    p = Poll(question=question, pub_date=datetime.datetime.now())
+    choices=request.REQUEST['choices']
+    pollees=request.REQUEST['pollees']
+    p = Poll(owner=User.objects.get(id=user), question=question, pub_date=datetime.datetime.now())
     p.save()
-    for choice in choice_string.split('|'):
+    for choice in choices.split('|'):
         p.choice_set.create(choice=choice, votes=0)
+    for pollee in pollees.split('|'):
+        p.pollees.add(User.objects.get(id=pollee))
     p.save()
-    #Talk to GCM to yell at the pollees
+#    header = {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'}
+#    for pollee in p.pollees.all():
+#        url = 'https://android.googleapis.com/gcm/send'
+#        data = json.dumps({'registration_ids':[pollee.registration_id], 'data' : {'command' : 'poll', 'poll_id' : p.id}})
+#        req = urllib2.Request(url, data, header)
+#        result = json.loads(urllib2.urlopen(req).read())
     return HttpResponse(json.dumps({'poll_id': p.id}))
 
 def request_poll(request):
@@ -47,18 +54,17 @@ def request_poll(request):
 
 def request_results(request):
     poll_id=request.REQUEST['poll_id']
-    print 'HERE!'
     try:
         p = Poll.objects.get(pk=poll_id)
     except Poll.DoesNotExist:
         raise Http404
-    print 'after try/except block!'
     response = {}
     for choice in p.choice_set.all(): 
-	response[choice.choice] = choice.votes
+	response[choice.choice] = {'count' : choice.votes, 'backers' : [u.id for u in choice.backers.all()]}
     return HttpResponse(json.dumps(response))
 
 def submit_vote(request):
+    user=request.REQUEST['user_id']
     poll_id=request.REQUEST['poll_id']
     choice_id=request.REQUEST['choice_id']
     try:
@@ -66,16 +72,13 @@ def submit_vote(request):
     except Poll.DoesNotExist:
         raise Http404
     c = p.choice_set.get(pk=choice_id)
+    c.backers.add(User.objects.get(id=user))
     c.votes += 1
     c.save()
-    response = {}
-    for choice in p.choice_set.all(): 
-	response[choice.choice] = choice.votes
     url = 'https://android.googleapis.com/gcm/send'
     data = json.dumps({'registration_ids':[regid], 'dry-run' : False, 'data' : {'command' : 'results', 'poll_id' : poll_id}})
     req = urllib2.Request(url, data, {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'})
     result = json.loads(urllib2.urlopen(req).read())
-    print 'leaving submit vote'
     return HttpResponse(json.dumps({'success' : 0}))
 
 
