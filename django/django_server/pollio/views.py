@@ -33,7 +33,12 @@ def new_poll(request):
     for pollee in pollees.split('|'):
         p.pollees.add(User.objects.get(id=pollee))
     p.save()
-    #Talk to GCM to yell at the pollees
+    header = {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'}
+    for pollee in p.pollees.all():
+        url = 'https://android.googleapis.com/gcm/send'
+        data = json.dumps({'registration_ids':[pollee.registration_id], 'data' : {'command' : 'poll', 'poll_id' : p.id}})
+        req = urllib2.Request(url, data, header)
+        result = json.loads(urllib2.urlopen(req).read())
     return HttpResponse(json.dumps({'poll_id': p.id}))
 
 def request_poll(request):
