@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TableRow
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+
+        <ImageButton
+            android:layout_weight="1.5"
+            android:layout_width="0dp"
+            android:layout_height="230dp"
+            android:id="@+id/imageButton"
+            android:layout_column="0"
+            android:src="@drawable/multiple_choice_pp_v1"
+            android:scaleType="centerInside"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- hello -->
+
+        <ImageButton
+            android:layout_weight="1.5"
+            android:layout_width="0dp"
+            android:layout_height="230dp"
+            android:id="@+id/imageButton3"
+            android:layout_column="1"
+            android:src="@drawable/yes_no_pp_v1"
+            android:scaleType="centerInside"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp" />
+    </TableRow>
+
+    <TableRow
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+
+        <ImageButton
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="230dp"
+            android:id="@+id/imageButton2"
+            android:layout_column="0"
+            android:scaleType="fitCenter"
+            android:src="@drawable/discrete_pp_v1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp" />
+
+        <ImageButton
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="230dp"
+            android:id="@+id/imageButton4"
+            android:layout_column="1"
+            android:scaleType="centerInside"
+            android:src="@drawable/pictures_pp_v3"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp" />
+    </TableRow>
+</TableLayout>
