@@ -7,7 +7,7 @@ class User(models.Model):
     registration_id = models.CharField(max_length=1024)
 
 class Poll(models.Model):
-    owner = models.ForeignKey(User)
+#    owner = models.ForeignKey(User)
     question = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
 
