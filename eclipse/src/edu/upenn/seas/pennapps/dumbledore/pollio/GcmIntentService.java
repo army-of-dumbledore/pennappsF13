@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
@@ -47,19 +48,18 @@ public class GcmIntentService extends IntentService {
             // If it's a regular GCM message, do some work.
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-                // This loop represents the service doing some work.
-                for (int i=0; i<5; i++) {
-                    Log.i(TAG, "Working... " + (i+1)
-                            + "/5 @ " + SystemClock.elapsedRealtime());
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                    }
-                }
-                Log.i(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
-                // Post notification of received message.
                 sendNotification("Received: " + extras.toString());
                 Log.i(TAG, "Received: " + extras.toString());
+               
+                if (extras.getString("command").trim().equals("results")) {
+                	
+                	Intent another_intent = new Intent(this, DemoActivity.class);
+                	another_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // yes that's what I really want!
+                	another_intent.putExtra("data", extras);
+                	Log.i(TAG, "launching...");
+                	startActivity(another_intent);
+
+                }
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.

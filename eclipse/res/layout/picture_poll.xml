@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#5f5f5f">
+
+    <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Take New Photo"
+            android:id="@+id/takePhotoButton"
+            android:layout_gravity="center"
+            android:background="@android:color/holo_green_light"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:onClick="dispatchTakePictureIntent"/>
+
+
+    <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose Existing Photo"
+            android:id="@+id/choosePhotoButton"
+            android:layout_gravity="center"
+            android:background="@android:color/holo_green_light"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="10dp"
+            android:onClick="dispatchChoosePictureIntent"/>
+
+    <GridView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pictureOptionGrid"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:verticalSpacing="25dp"
+            android:numColumns="2"
+            android:textFilterEnabled="true"
+            android:gravity="center"/>
+
+</LinearLayout>

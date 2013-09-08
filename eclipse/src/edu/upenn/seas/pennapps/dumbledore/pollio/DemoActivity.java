@@ -26,9 +26,11 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -51,11 +53,18 @@ public class DemoActivity extends Activity {
      * from the API Console, as described in "Getting Started."
      */
     String SENDER_ID = "1033493645859";
+    
+    /** IP/URL of the server
+     *
+     */
+    String SERVER = "158.130.62.140:8000";
 
     /**
      * Tag used on log messages.
      */
     static final String TAG = "GCMDemo";
+    static final String PREFS_NAME = "edu.upenn.seas.pennapps.dumbledore.pollio.prefs";
+    static final String PREFS_USERID = "userid";
 
     TextView mDisplay;
     GoogleCloudMessaging gcm;
@@ -63,7 +72,10 @@ public class DemoActivity extends Activity {
     SharedPreferences prefs;
     Context context;
 
-    String regid;
+    String regid, userid;
+    
+    DatabaseWrangler dbh;
+    SQLiteDatabase db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,41 +85,112 @@ public class DemoActivity extends Activity {
         mDisplay = (TextView) findViewById(R.id.display);
 
         context = getApplicationContext();
+        dbh = new DatabaseWrangler(context);
+        db = dbh.getWritableDatabase();
+        dbh.create_tables();
 
         // Check device for Play Services APK. If check succeeds, proceed with
         //  GCM registration.
         if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance(this);
             regid = getRegistrationId(context);
+            userid = getUserId();
 
             if (regid.isEmpty()) {
                 registerInBackground();
             } else {
-            	mDisplay.append("Saved ID: " + regid + "\n");
+            	mDisplay.append("saved gcm id: " + regid + "\n");
             }
+        
+            if (userid.isEmpty()) {
+	        	new AsyncTask<Void, Void, String>() {
+	        		@Override
+	        		protected String doInBackground(Void... params) {
+	        			JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/initialize/",
+	                            "name", "Reuven Rand",
+	                            "reg_id", regid);
+	        			try {
+							return json.getString("user_id");
+						} catch (JSONException e) {
+							return "The server is broke yo :(";
+						}
+	        		}
+	        		
+	        		@Override
+	        		protected void onPostExecute(String result) {
+	        			userid = result;
+	        			setUserId(userid);
+	        			mDisplay.append("new user id: " + result + "\n");
+	        		}
+	        	}.execute(null, null, null);
+            } else {
+            	mDisplay.append("saved user id: " + userid + "\n");
+            }
+        	
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
+        
+        Intent intent = getIntent();
+        final Bundle extras = intent.getExtras();
+        if (extras != null && !extras.isEmpty()) {
+        	final Bundle stuff = extras.getBundle("data");
+        	if (stuff.getString("command").equals("results")) {
+        		new AsyncTask<Void, Void, String>() {
+        			@Override
+        			protected String doInBackground(Void... params) {
+        				JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/request_results/",
+        															 "user_id", userid,
+        															 "poll_id", stuff.getString("poll_id"));
+        				
+        				
+        				
+        				return json.toString();
+        			}
+        			
+        			@Override
+        			protected void onPostExecute(String msg) {
+        				mDisplay.append(msg + "\n");
+        			}
+        		}.execute(null, null, null);
+        				
+        	}
+        }
     }
     
+    
     public void onClick(final View view) {
-        if (view == findViewById(R.id.send)) {
+    	if (view == findViewById(R.id.create)){
+    		new AsyncTask<Void, Void, String>() {
+    			@Override
+    			protected String doInBackground(Void... params) {
+    				
+    				JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/new_poll/",
+    															 "user_id", userid,
+    															 "question", "What color is your parachute?",
+    															 "choices", "red|green|blue",
+    															 "pollees", "1|2");
+    				
+    				return json.toString();
+    			}
+    			
+    			@Override
+    			protected void onPostExecute(String msg) {
+    				mDisplay.append(msg + "\n");
+    			}
+    		}.execute(null, null, null);
+    	} else if (view == findViewById(R.id.vote)) {
             new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
-                    String msg = "";
-                    try {
-                        Bundle data = new Bundle();
-                            data.putString("my_message", "Hello World");
-                            data.putString("my_action",
-                                    "com.google.android.gcm.demo.app.ECHO_NOW");
-                            String id = Integer.toString(msgId.incrementAndGet());
-                            gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
-                            msg = "Sent message";
-                    } catch (IOException ex) {
-                        msg = "Error :" + ex.getMessage();
-                    }
-                    return msg;
+                    
+                	JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/submit_vote/",
+                												 "user_id", userid,
+                												 "poll_id", "1",
+                												 "choice_id", "2");
+                	
+                	return json.toString();
+                	
                 }
 
                 @Override
@@ -117,47 +200,21 @@ public class DemoActivity extends Activity {
             }.execute(null, null, null);
         } else if (view == findViewById(R.id.clear)) {
             mDisplay.setText("");
-        } else if (view == findViewById(R.id.json)) {
+            setUserId("");
+        } else if (view == findViewById(R.id.app)) {
         	
-        	new AsyncTask<Void, Void, String>() {
+        	startActivity(new Intent(context, NewPollActivity.class));
+        	
+        	/*new AsyncTask<Void, Void, String>() {
         		@Override
         		protected String doInBackground(Void... params) {
+        			JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/");
         			
-        			HttpClient httpclient = new DefaultHttpClient();
-        	        HttpResponse response;
-        	        String responseString = null;
-        	        try {
-        	            response = httpclient.execute(new HttpGet("http://158.130.62.140:8000/polls/"));
-        	            StatusLine statusLine = response.getStatusLine();
-        	            if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-        	                ByteArrayOutputStream out = new ByteArrayOutputStream();
-        	                response.getEntity().writeTo(out);
-        	                out.close();
-        	                responseString = out.toString();
-        	            } else{
-        	                //Closes the connection.
-        	                response.getEntity().getContent().close();
-        	                throw new IOException(statusLine.getReasonPhrase());
-        	            }
-        	        } catch (ClientProtocolException e) {
-        	            Log.e(TAG, "CPE: " + e.getMessage());
-        	        } catch (IOException e) {
-        	            Log.e(TAG, "IOE: " + e.getMessage());
-        	        }
-        	        
-        	        String result = "not parsed :(";
-        	        
-        	        try {
-						JSONObject jObject = new JSONObject(responseString);
-						
-						result = "something is " + jObject.getString("something") + "!\n";
-						
+        			try {
+						return json.getString("something");
 					} catch (JSONException e) {
-						Log.e(TAG, "JsonE: " + e.getMessage());
+						return "The server is broken yo :(";
 					}
-        	        
-        	        return responseString + " -> " + result;
-        			
         		}
         		
         		@Override
@@ -165,6 +222,7 @@ public class DemoActivity extends Activity {
         			mDisplay.append(msg);
         		}
         	}.execute(null, null, null);
+        	*/
         	
         }
     }
@@ -216,6 +274,17 @@ public class DemoActivity extends Activity {
         return registrationId;
     }
     
+    private String getUserId() {
+    	final SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+    	
+    	return prefs.getString(PREFS_USERID, "");
+    }
+    private void setUserId(String userid) {
+    	final SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+    	
+    	prefs.edit().putString(PREFS_USERID, userid).commit();
+    }
+    
     /**
      * @return Application's {@code SharedPreferences}.
      */
@@ -263,6 +332,9 @@ public class DemoActivity extends Activity {
                     // The request to your server should be authenticated if your app
                     // is using accounts.
                     //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                    JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/initialize",
+                    		                                     "name", "Alex Burka",
+                    		                                     "reg_id", regid);
 
                     // For this demo: we don't need to send it because the device
                     // will send upstream messages to a server that echo back the

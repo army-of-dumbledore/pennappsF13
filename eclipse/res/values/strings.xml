@@ -4,5 +4,59 @@
     <string name="app_name">Pollio</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    
+    <string name="action_settings">Settings</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="new_pollio">+ New Pollio</string>
+    <string name="my_pollios">My Pollios</string>
+    <string name="friend_pollios">Friend Pollios</string>
+    <string name="public_pollios">Public Pollios</string>
+
+    <string name="poll_question">Enter a Question</string>
+    <string name="mc_poll_name">Multiple Choice Poll</string>
+    
+    <string-array name="db_create">
+        <item>
+            CREATE TABLE "pollio_user" (
+			    "id" integer NOT NULL PRIMARY KEY,
+			    "name" varchar(200) NOT NULL,
+			    "registration_id" varchar(1024) NOT NULL
+			);
+        </item>
+        <item>
+            CREATE TABLE "pollio_poll_pollees" (
+			    "id" integer NOT NULL PRIMARY KEY,
+			    "poll_id" integer NOT NULL,
+			    "user_id" integer NOT NULL REFERENCES "pollio_user" ("id"),
+			    UNIQUE ("poll_id", "user_id")
+			);
+        </item>
+        <item>
+            CREATE TABLE "pollio_poll" (
+			    "id" integer NOT NULL PRIMARY KEY,
+			    "owner_id" integer NOT NULL REFERENCES "pollio_user" ("id"),
+			    "question" varchar(200) NOT NULL,
+			    "pub_date" datetime NOT NULL
+			);
+        </item>
+        <item>
+            CREATE TABLE "pollio_choice_backers" (
+			    "id" integer NOT NULL PRIMARY KEY,
+			    "choice_id" integer NOT NULL,
+			    "user_id" integer NOT NULL REFERENCES "pollio_user" ("id"),
+			    UNIQUE ("choice_id", "user_id")
+			);
+        </item>
+        <item>
+            CREATE TABLE "pollio_choice" (
+			    "id" integer NOT NULL PRIMARY KEY,
+			    "poll_id" integer NOT NULL REFERENCES "pollio_poll" ("id"),
+			    "choice" varchar(200) NOT NULL,
+			    "votes" integer NOT NULL
+			);
+        </item>
+    </string-array>
 
 </resources>

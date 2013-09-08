@@ -15,14 +15,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+	
+	static final String PREFS_NAME = "edu.upenn.seas.pennapps.dumbledore.pollio.prefs";
+    static final String PREFS_USERID = "userid";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.before_register);
     }
 
 
@@ -38,5 +42,9 @@ public class MainActivity extends Activity {
         startActivity(new Intent(this, DemoActivity.class));
     }
     
+    public void doLogin(final View view) {
+    	getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putString(PREFS_USERID, ((EditText)findViewById(R.id.userid)).getText().toString()).commit();
+    	doButton(view);
+    }
     
 }
