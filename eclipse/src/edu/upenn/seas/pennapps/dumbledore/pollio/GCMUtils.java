@@ -24,6 +24,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -36,12 +38,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Main UI for the demo app.
  */
-public class DemoActivity extends Activity {
+public class GCMUtils extends Activity {
 
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
@@ -52,26 +53,80 @@ public class DemoActivity extends Activity {
      * Substitute you own sender ID here. This is the project number you got
      * from the API Console, as described in "Getting Started."
      */
-    String SENDER_ID = "1033493645859";
+    static String SENDER_ID = "1033493645859";
 
 
     /**
      * Tag used on log messages.
      */
-    static final String TAG = "GCMDemo";
-    static final String PREFS_NAME = "edu.upenn.seas.pennapps.dumbledore.pollio.prefs";
-    static final String PREFS_USERID = "userid";
+    static final String TAG = "PollioGCM";
 
     TextView mDisplay;
-    GoogleCloudMessaging gcm;
-    AtomicInteger msgId = new AtomicInteger();
-    SharedPreferences prefs;
-    Context context;
+    static GoogleCloudMessaging gcm;
+    static AtomicInteger msgId = new AtomicInteger();
+    static SharedPreferences prefs;
+    static Context context;
 
-    String regid, userid;
+    static String regid, userid;
     
-    DatabaseWrangler dbh;
-    SQLiteDatabase db;
+    static DatabaseWrangler dbh;
+    static SQLiteDatabase db;
+    
+    public static void initGCM(final Activity that) {
+    	context = that.getApplicationContext();
+        dbh = new DatabaseWrangler(context);
+        db = dbh.getWritableDatabase();
+        dbh.create_tables();
+        
+     // Check device for Play Services APK. If check succeeds, proceed with
+        //  GCM registration.
+        if (checkPlayServices(that)) {
+            gcm = GoogleCloudMessaging.getInstance(that);
+            regid = getRegistrationId(context);
+            userid = Utils.getUserId(context);
+
+            if (regid.equals("")) {
+                registerInBackground(that.getApplicationContext());
+            } else {
+            	Log.i(TAG, "saved gcm id: " + regid);
+            }
+        
+            if (userid.equals("")) {
+	        	new AsyncTask<Void, Void, String>() {
+	        		@Override
+	        		protected String doInBackground(Void... params) {
+	        			
+	        			// get user name magically from AccountManager
+	        			AccountManager am = AccountManager.get(that); // "this" references the current Context
+	        			Account[] accounts = am.getAccountsByType("com.google");
+	        			String name = accounts[0].name;
+	        			Log.i(TAG, "Nice to meet you, " + name);
+	        			
+	        			JSONObject json = InternetUtils.json_request("http://" + context.getResources().getString(R.string.server) + "/polls/initialize/",
+	                            "name", name,
+	                            "reg_id", regid);
+	        			try {
+							return json.getString("user_id");
+						} catch (JSONException e) {
+							return "The server is broke yo :(";
+						}
+	        		}
+	        		
+	        		@Override
+	        		protected void onPostExecute(String result) {
+	        			userid = result;
+	        			Utils.setUserId(context, userid);
+	        			Log.i(TAG, "new user id: " + result);
+	        		}
+	        	}.execute(null, null, null);
+            } else {
+            	Log.i(TAG, "saved user id: " + userid);
+            }
+        	
+        } else {
+            Log.e(TAG, "No valid Google Play Services APK found.");
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,13 +142,13 @@ public class DemoActivity extends Activity {
 
         // Check device for Play Services APK. If check succeeds, proceed with
         //  GCM registration.
-        if (checkPlayServices()) {
+        if (checkPlayServices(this)) {
             gcm = GoogleCloudMessaging.getInstance(this);
             regid = getRegistrationId(context);
-            userid = getUserId();
+            userid = Utils.getUserId(context);
 
             if (regid.equals("")) {
-                registerInBackground();
+                registerInBackground(getApplicationContext());
             } else {
             	mDisplay.append("saved gcm id: " + regid + "\n");
             }
@@ -115,7 +170,7 @@ public class DemoActivity extends Activity {
 	        		@Override
 	        		protected void onPostExecute(String result) {
 	        			userid = result;
-	        			setUserId(userid);
+	        			Utils.setUserId(context, userid);
 	        			mDisplay.append("new user id: " + result + "\n");
 	        		}
 	        	}.execute(null, null, null);
@@ -196,7 +251,7 @@ public class DemoActivity extends Activity {
             }.execute(null, null, null);
         } else if (view == findViewById(R.id.clear)) {
             mDisplay.setText("");
-            setUserId("");
+            Utils.setUserId(context, "");
         } else if (view == findViewById(R.id.app)) {
         	
         	startActivity(new Intent(context, NewPollActivity.class));
@@ -228,15 +283,15 @@ public class DemoActivity extends Activity {
      * it doesn't, display a dialog that allows users to download the APK from
      * the Google Play Store or enable it in the device's system settings.
      */
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+    public static boolean checkPlayServices(Activity that) {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(that);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                GooglePlayServicesUtil.getErrorDialog(resultCode, that,
                         PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
                 Log.i(TAG, "This device is not supported.");
-                finish();
+                return false;
             }
             return false;
         }
@@ -251,7 +306,7 @@ public class DemoActivity extends Activity {
      * @return registration ID, or empty string if there is no existing
      *         registration ID.
      */
-    private String getRegistrationId(Context context) {
+     public static String getRegistrationId(Context context) {
         final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         if (registrationId.equals("")) {
@@ -270,24 +325,13 @@ public class DemoActivity extends Activity {
         return registrationId;
     }
     
-    private String getUserId() {
-    	final SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-    	
-    	return prefs.getString(PREFS_USERID, "");
-    }
-    private void setUserId(String userid) {
-    	final SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-    	
-    	prefs.edit().putString(PREFS_USERID, userid).commit();
-    }
-    
     /**
      * @return Application's {@code SharedPreferences}.
      */
-    private SharedPreferences getGCMPreferences(Context context) {
+    public static SharedPreferences getGCMPreferences(Context context) {
         // This sample app persists the registration ID in shared preferences, but
         // how you store the regID in your app is up to you.
-        return getSharedPreferences(DemoActivity.class.getSimpleName(),
+        return context.getSharedPreferences(GCMUtils.class.getSimpleName(),
                 Context.MODE_PRIVATE);
     }
     
@@ -311,7 +355,7 @@ public class DemoActivity extends Activity {
      * Stores the registration ID and app versionCode in the application's
      * shared preferences.
      */
-    private void registerInBackground() {
+    public static void registerInBackground(final Context context) {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
@@ -328,7 +372,7 @@ public class DemoActivity extends Activity {
                     // The request to your server should be authenticated if your app
                     // is using accounts.
                     //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-                    JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/initialize",
+                    JSONObject json = InternetUtils.json_request("http://" + context.getResources().getString(R.string.server) + "/polls/initialize",
                     		                                     "name", "Alex Burka",
                     		                                     "reg_id", regid);
 
@@ -349,7 +393,7 @@ public class DemoActivity extends Activity {
 
             @Override
             protected void onPostExecute(String msg) {
-                mDisplay.append(msg + "\n");
+                Log.i(TAG, msg);
             }
         }.execute(null, null, null);
 
@@ -362,7 +406,7 @@ public class DemoActivity extends Activity {
      * @param context application's context.
      * @param regId registration ID
      */
-    private void storeRegistrationId(Context context, String regId) {
+    public static void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences(context);
         int appVersion = getAppVersion(context);
         Log.i(TAG, "Saving regId on app version " + appVersion);

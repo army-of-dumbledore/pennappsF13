@@ -39,7 +39,7 @@ public class MainActivity extends Activity {
     
     public void doButton(final View view) {
         Toast.makeText(getApplicationContext(), "button!", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this, DemoActivity.class));
+        startActivity(new Intent(this, GCMUtils.class));
     }
     
     public void doLogin(final View view) {

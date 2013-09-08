@@ -8,7 +8,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 public class ImageAdapter extends BaseAdapter {
-
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
@@ -33,5 +32,4 @@ public class ImageAdapter extends BaseAdapter {
 		return null;
 	}
    
-
 }
