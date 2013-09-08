@@ -1,7 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:android1="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android1:id="@+id/question"
+        android1:layout_width="match_parent"
+        android1:layout_height="wrap_content"
+        android1:layout_weight="0.13"
+        android1:text="TextView" />
+
+    <RadioGroup
+        android1:id="@+id/mcradiogroup"
+        android1:layout_width="match_parent"
+        android1:layout_height="wrap_content"
+        android1:layout_weight="0.76" >
+
+        <RadioButton
+            android1:id="@+id/mc0"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:checked="true"
+            android1:text="RadioButton" />
+
+        <RadioButton
+            android1:id="@+id/mc1"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:text="RadioButton" />
+
+        <RadioButton
+            android1:id="@+id/mc2"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:text="RadioButton" />
+
+        <RadioButton
+            android1:id="@+id/mc3"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:text="RadioButton" />
+    </RadioGroup>
+
+    <Button
+        android1:id="@+id/vote"
+        android1:layout_width="fill_parent"
+        android1:layout_height="wrap_content"
+        android1:layout_weight="0.13"
+        android1:text="Submit"
+        android1:onClick="submit_poll" />
 
 </LinearLayout>
