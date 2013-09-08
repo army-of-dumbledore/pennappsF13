@@ -1,9 +1,13 @@
 package edu.upenn.seas.pennapps.dumbledore.pollio;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ActionBar;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
@@ -96,7 +100,47 @@ public class MultipleChoicePoll extends Activity {
     
     public void mc_poll_done(final View view)
     {
-    	Toast.makeText(getApplicationContext(), "Poll sent! J/K LOL", Toast.LENGTH_SHORT).show();
+    	new AsyncTask<Void, Void, Boolean>() {
+    		@Override
+    		protected Boolean doInBackground(Void... params) {
+    			StringBuilder sb = new StringBuilder();
+    			EditText[] options = {(EditText) findViewById(R.id.poll_option1),
+    								  (EditText) findViewById(R.id.poll_option2),
+    								  (EditText) findViewById(R.id.poll_option3),
+    								  (EditText) findViewById(R.id.poll_option4)};
+    			for (int i = 0; i < 4; i++) {
+    				if (options[i].getVisibility() == View.VISIBLE) {
+    					sb.append(options[i].getText().toString());
+    					sb.append("|");
+    				}
+    			}
+    			String userid = Utils.getUserId(getApplicationContext()),
+    				   question = ((EditText)findViewById(R.id.question)).getText().toString(),
+    				   choices = sb.toString().substring(0, sb.length() - 1);
+    			JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/new_poll",
+    					 								     "user_id", userid,
+    					 								     "question", question,
+    					 								     "choices", choices,
+    					 								     "pollees", "1|2|3");
+    			
+    			try {
+    				int pollid = json.getInt("poll_id"); // TODO store somewheres
+    				return true;
+    			} catch (JSONException e) {
+    				return false;
+    			}
+    		}
+    		
+    		@Override
+    		protected void onPostExecute(Boolean success) {
+    			if (success) {
+    				Toast.makeText(getApplicationContext(), "Poll sent!", Toast.LENGTH_SHORT).show();
+    			} else {
+    				Toast.makeText(getApplicationContext(), "Poll not sent :(", Toast.LENGTH_SHORT).show();
+    			}
+    		}
+    	}.execute(null, null, null);
+    	
     	finish();
     }
 

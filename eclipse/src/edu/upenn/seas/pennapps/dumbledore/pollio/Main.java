@@ -29,13 +29,23 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        GCMUtils.initGCM(this);
     }
 
     public void newPoll(View view)
     {
-        Intent i = new Intent(this, Mc_poll.class);
+        Intent i = new Intent(this, MultipleChoicePoll.class);
         startActivity(i);
+    }
+
+    public void TakePollio(View view)
+    {
+
+    }
+
+    public void ShowMyPollio(View view)
+    {
+
     }
 
 

@@ -2,6 +2,7 @@ package edu.upenn.seas.pennapps.dumbledore.pollio;
 
 import java.io.Serializable;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -58,7 +59,7 @@ public class GcmIntentService extends IntentService {
                
                 if (extras.getString("command").trim().equals("results")) {
                 	
-                	Intent another_intent = new Intent(this, DemoActivity.class);
+                	Intent another_intent = new Intent(this, GCMUtils.class);
                 	another_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // yes that's what I really want!
                 	another_intent.putExtra("data", extras);
                 	Log.i(TAG, "launching...");
@@ -71,8 +72,15 @@ public class GcmIntentService extends IntentService {
                 	new AsyncTask<Void, Void, JSONObject>() {
                 		@Override
                 		protected JSONObject doInBackground(Void... params) {
-                			return InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/request_poll/",
+                			JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/request_poll/",
                 														 "poll_id", "pollid");
+                			try {
+								json.put("poll_id", pollid);
+							} catch (JSONException e) {
+								Log.e(TAG, "JSONE: " + e.getMessage());
+							}
+                			
+                			return json;
                 		}
                 		
                 		@Override
@@ -99,7 +107,7 @@ public class GcmIntentService extends IntentService {
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, DemoActivity.class), 0);
+                new Intent(this, GCMUtils.class), 0);
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
