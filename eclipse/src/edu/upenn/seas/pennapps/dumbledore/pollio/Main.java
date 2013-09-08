@@ -29,6 +29,7 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Utils.setUserId(this, "");
         GCMUtils.initGCM(this);
     }
 

@@ -110,8 +110,11 @@ public class MultipleChoicePoll extends Activity {
     								  (EditText) findViewById(R.id.poll_option4)};
     			for (int i = 0; i < 4; i++) {
     				if (options[i].getVisibility() == View.VISIBLE) {
-    					sb.append(options[i].getText().toString());
-    					sb.append("|");
+    					String choice = options[i].getText().toString();
+    					if (!choice.equals("")) {
+    						sb.append(options[i].getText().toString());
+    						sb.append("|");
+    					}
     				}
     			}
     			String userid = Utils.getUserId(getApplicationContext()),
@@ -121,10 +124,10 @@ public class MultipleChoicePoll extends Activity {
     					 								     "user_id", userid,
     					 								     "question", question,
     					 								     "choices", choices,
-    					 								     "pollees", "1|2|3");
+    					 								     "pollees", "1|2");
     			
     			try {
-    				int pollid = json.getInt("poll_id"); // TODO store somewheres
+    				String pollid = json.getString("poll_id"); // TODO store somewheres
     				return true;
     			} catch (JSONException e) {
     				return false;

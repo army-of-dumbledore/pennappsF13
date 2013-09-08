@@ -9,20 +9,25 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:baselineAligned="false"
-        android:background="#5dff30">
+        android:baselineAligned="false">
 
         <Button
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
             android:text="@string/new_pollio"
             android:id="@+id/button"
             android:clickable="true"
-            android:onClick="newPoll"/>
+            android:onClick="newPoll"
+            android:textSize="25dp"
+            android:background="#d1e8cc"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp" />
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="67dp"
+            android:layout_height="75dp"
             android:id="@+id/linearLayout"
             android:orientation="horizontal"
             android:textAlignment="center">
@@ -33,15 +38,31 @@
                 android:layout_height="fill_parent"
                 android:text="@string/my_pollios"
                 android:id="@+id/button2"
-                android:clickable="true" />
+                android:clickable="true"
+                android:textSize="23dp"
+                android:background="#d1e8cc"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="10dp"
+
+                android:onClick="ShowMyPollio"/>
 
             <Button
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
-                android:text="@string/friend_pollios"
+                android:text="Friend's Pollios"
                 android:id="@+id/button4"
-                android:clickable="true" />
+                android:clickable="true"
+                android:textSize="23dp"
+                android:background="#d1e8cc"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+
+                android:onClick="TakePollio"/>
 
             <Button
                 android:layout_weight="1"
@@ -57,7 +78,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/listView"
             android:choiceMode="multipleChoice"
-            android:clickable="true" />
+            android:clickable="true"
+            android:dividerHeight="1dp"
+            android:divider="#ff0914"
+            android:drawSelectorOnTop="false"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false" />
 
     </LinearLayout>
 </LinearLayout>

@@ -38,13 +38,14 @@ public class MultipleChoiceRequest extends Activity {
 			Log.e(TAG, "This can't happen");
 		}
         
-        String question = "ERROR";
+        String question = "ERROR", poller = "ERROR";
         ArrayList<String> ids = new ArrayList<String>(),
         		          texts = new ArrayList<String>();
         
         try {
         	pollid = jsono.getString("poll_id");
 			question = jsono.getString("question");
+			poller = jsono.getString("owner");
 			JSONArray choices = jsono.getJSONArray("choices");
 			for(int i=0; i<choices.length();i++){
 				JSONObject item = choices.getJSONObject(i);
@@ -57,6 +58,9 @@ public class MultipleChoiceRequest extends Activity {
 		}
         //question text
         TextView questionText = (TextView) findViewById(R.id.question);
+        questionText.setText(question);
+        TextView pollerText = (TextView) findViewById(R.id.poller);
+        pollerText.setText(poller);
         
         //vote buttons
         RadioButton but0 = (RadioButton) findViewById(R.id.mc0);
@@ -73,6 +77,7 @@ public class MultipleChoiceRequest extends Activity {
         {
         	buttons[i].setVisibility(View.VISIBLE);
         	buttons[i].setText(texts.get(i));
+        	buttons[i].setTag(ids.get(i));
         }
         
     }
@@ -82,11 +87,11 @@ public class MultipleChoiceRequest extends Activity {
     		@Override
     		protected Boolean doInBackground(Void... params) {
     			RadioGroup group = (RadioGroup) findViewById(R.id.mcradiogroup);
-    			int choiceid = group.getCheckedRadioButtonId();
+    			String choiceid = (String) findViewById(group.getCheckedRadioButtonId()).getTag();
     			JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server)+ "/polls/submit_vote",
     					 									 "user_id", Utils.getUserId(getApplicationContext()),
     					 									 "poll_id", pollid,
-    					 									 "choice_id", Integer.toString(choiceid));
+    					 									 "choice_id", choiceid);
     			try {
     				return json.getInt("success") == 0;
     			} catch (JSONException e) {
