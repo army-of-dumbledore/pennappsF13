@@ -53,9 +53,9 @@ public class MultipleChoiceRequest extends Activity {
         
         //vote buttons
         RadioButton but0 = (RadioButton) findViewById(R.id.mc0);
-        RadioButton but1 = (RadioButton) findViewById(R.id.mc0);
-        RadioButton but2 = (RadioButton) findViewById(R.id.mc0);
-        RadioButton but3 = (RadioButton) findViewById(R.id.mc0);
+        RadioButton but1 = (RadioButton) findViewById(R.id.mc1);
+        RadioButton but2 = (RadioButton) findViewById(R.id.mc2);
+        RadioButton but3 = (RadioButton) findViewById(R.id.mc3);
         but0.setVisibility(View.GONE);
         but1.setVisibility(View.GONE);
         but2.setVisibility(View.GONE);
