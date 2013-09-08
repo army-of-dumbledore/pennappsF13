@@ -38,7 +38,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Main UI for the demo app.
@@ -60,7 +59,7 @@ public class GCMUtils extends Activity {
     /**
      * Tag used on log messages.
      */
-    static final String TAG = "GCMDemo";
+    static final String TAG = "PollioGCM";
 
     TextView mDisplay;
     static GoogleCloudMessaging gcm;
@@ -89,7 +88,7 @@ public class GCMUtils extends Activity {
             if (regid.equals("")) {
                 registerInBackground(that.getApplicationContext());
             } else {
-            	Toast.makeText(context, "saved gcm id: " + regid, Toast.LENGTH_SHORT).show();
+            	Log.i(TAG, "saved gcm id: " + regid);
             }
         
             if (userid.equals("")) {
@@ -101,7 +100,7 @@ public class GCMUtils extends Activity {
 	        			AccountManager am = AccountManager.get(that); // "this" references the current Context
 	        			Account[] accounts = am.getAccountsByType("com.google");
 	        			String name = accounts[0].name;
-	        			Toast.makeText(that, "Nice to meet you, " + name, Toast.LENGTH_SHORT).show();
+	        			Log.i(TAG, "Nice to meet you, " + name);
 	        			
 	        			JSONObject json = InternetUtils.json_request("http://" + context.getResources().getString(R.string.server) + "/polls/initialize/",
 	                            "name", name,
@@ -117,11 +116,11 @@ public class GCMUtils extends Activity {
 	        		protected void onPostExecute(String result) {
 	        			userid = result;
 	        			Utils.setUserId(context, userid);
-	        			Toast.makeText(context, "new user id: " + result, Toast.LENGTH_SHORT).show();
+	        			Log.i(TAG, "new user id: " + result);
 	        		}
 	        	}.execute(null, null, null);
             } else {
-            	Toast.makeText(context, "saved user id: " + userid, Toast.LENGTH_SHORT).show();
+            	Log.i(TAG, "saved user id: " + userid);
             }
         	
         } else {
@@ -394,7 +393,7 @@ public class GCMUtils extends Activity {
 
             @Override
             protected void onPostExecute(String msg) {
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                Log.i(TAG, msg);
             }
         }.execute(null, null, null);
 
