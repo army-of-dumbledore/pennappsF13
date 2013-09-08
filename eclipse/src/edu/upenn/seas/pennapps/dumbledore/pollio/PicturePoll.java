@@ -40,7 +40,7 @@ public class PicturePoll extends Activity {
         setContentView(R.layout.picture_poll);
 
         GridView gridview = (GridView) findViewById(R.id.pictureOptionGrid);
-        gridview.setAdapter(new ImageAdapter(this));
+        gridview.setAdapter(new ImageAdapter());
 
     }
     public static boolean isIntentAvailable(Context context, String action) {

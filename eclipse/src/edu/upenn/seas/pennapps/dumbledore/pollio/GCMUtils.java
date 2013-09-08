@@ -72,6 +72,15 @@ public class GCMUtils extends Activity {
     static DatabaseWrangler dbh;
     static SQLiteDatabase db;
     
+    public static String getUsername(Context that) {
+    	// get user name magically from AccountManager
+		AccountManager am = AccountManager.get(that); // "this" references the current Context
+		Account[] accounts = am.getAccountsByType("com.google");
+		String name = accounts[0].name;
+		Log.i(TAG, "Nice to meet you, " + name);
+		return name;
+    }
+    
     public static void initGCM(final Activity that) {
     	context = that.getApplicationContext();
         dbh = new DatabaseWrangler(context);
@@ -96,14 +105,10 @@ public class GCMUtils extends Activity {
 	        		@Override
 	        		protected String doInBackground(Void... params) {
 	        			
-	        			// get user name magically from AccountManager
-	        			AccountManager am = AccountManager.get(that); // "this" references the current Context
-	        			Account[] accounts = am.getAccountsByType("com.google");
-	        			String name = accounts[0].name;
-	        			Log.i(TAG, "Nice to meet you, " + name);
+	        			
 	        			
 	        			JSONObject json = InternetUtils.json_request("http://" + context.getResources().getString(R.string.server) + "/polls/initialize/",
-	                            "name", name,
+	                            "name", getUsername(that),
 	                            "reg_id", regid);
 	        			try {
 							return json.getString("user_id");
@@ -373,7 +378,7 @@ public class GCMUtils extends Activity {
                     // is using accounts.
                     //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
                     JSONObject json = InternetUtils.json_request("http://" + context.getResources().getString(R.string.server) + "/polls/initialize",
-                    		                                     "name", "Alex Burka",
+                    		                                     "name", getUsername(context),
                     		                                     "reg_id", regid);
 
                     // For this demo: we don't need to send it because the device

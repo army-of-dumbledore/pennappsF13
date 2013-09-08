@@ -59,6 +59,9 @@ public class GcmIntentService extends IntentService {
                
                 if (extras.getString("command").trim().equals("results")) {
                 	
+                	final String pollid = extras.getString("poll_id");
+                	final String sender = extras.getString("user_id");
+                	
                 	Intent another_intent = new Intent(this, GCMUtils.class);
                 	another_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // yes that's what I really want!
                 	another_intent.putExtra("data", extras);
@@ -68,14 +71,16 @@ public class GcmIntentService extends IntentService {
                 } else if (extras.getString("command").trim().equals("poll")) {
                 	
                 	final String pollid = extras.getString("poll_id");
+                	final String owner = extras.getString("owner");
                 	final GcmIntentService that = this;
                 	new AsyncTask<Void, Void, JSONObject>() {
                 		@Override
                 		protected JSONObject doInBackground(Void... params) {
                 			JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/request_poll/",
-                														 "poll_id", "pollid");
+                														 "poll_id", pollid);
                 			try {
 								json.put("poll_id", pollid);
+								json.put("owner", owner);
 							} catch (JSONException e) {
 								Log.e(TAG, "JSONE: " + e.getMessage());
 							}
@@ -87,7 +92,7 @@ public class GcmIntentService extends IntentService {
                 		protected void onPostExecute(JSONObject msg) {
                 			Intent i = new Intent(that, MultipleChoiceRequest.class);
                 			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                			i.putExtra("json", (Serializable)msg);
+                			i.putExtra("json", msg.toString());
                 			startActivity(i);
                 		}
                 	}.execute(null, null, null);
