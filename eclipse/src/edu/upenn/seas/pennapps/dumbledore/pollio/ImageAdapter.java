@@ -31,5 +31,4 @@ public class ImageAdapter extends BaseAdapter {
 		// TODO Auto-generated method stub
 		return null;
 	}
-   
 }

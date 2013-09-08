@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 public class MultipleChoiceRequest extends Activity {
 	
 	private String pollid;
+	private static String TAG = "PollioMCRq";
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +31,12 @@ public class MultipleChoiceRequest extends Activity {
         
         Intent intent  = getIntent();
         Bundle extras = intent.getExtras();
-        JSONObject jsono = (JSONObject)extras.get("json");
+        JSONObject jsono = new JSONObject();
+		try {
+			jsono = new JSONObject((String)extras.get("json"));
+		} catch (JSONException e1) {
+			Log.e(TAG, "This can't happen");
+		}
         
         String question = "ERROR";
         ArrayList<String> ids = new ArrayList<String>(),
@@ -53,9 +60,9 @@ public class MultipleChoiceRequest extends Activity {
         
         //vote buttons
         RadioButton but0 = (RadioButton) findViewById(R.id.mc0);
-        RadioButton but1 = (RadioButton) findViewById(R.id.mc0);
-        RadioButton but2 = (RadioButton) findViewById(R.id.mc0);
-        RadioButton but3 = (RadioButton) findViewById(R.id.mc0);
+        RadioButton but1 = (RadioButton) findViewById(R.id.mc1);
+        RadioButton but2 = (RadioButton) findViewById(R.id.mc2);
+        RadioButton but3 = (RadioButton) findViewById(R.id.mc3);
         but0.setVisibility(View.GONE);
         but1.setVisibility(View.GONE);
         but2.setVisibility(View.GONE);
