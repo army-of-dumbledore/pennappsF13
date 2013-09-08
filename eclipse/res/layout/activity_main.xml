@@ -28,7 +28,6 @@
             android:textAlignment="center">
 
             <Button
-                style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
@@ -37,7 +36,6 @@
                 android:clickable="true" />
 
             <Button
-                style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
@@ -46,7 +44,6 @@
                 android:clickable="true" />
 
             <Button
-                style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
