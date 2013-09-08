@@ -34,8 +34,17 @@ public class NewPollActivity extends Activity {
 
     public void newPoll(View view)
     {
-        Intent i = new Intent(this, Mc_poll.class);
-        startActivity(i);
+    	Class c = null;
+        if (view == findViewById(R.id.mcpollbutton)) {
+        	c = MultipleChoicePoll.class;
+        } /*else if (view == findViewById(R.id.binarypollbutton)) {
+        	c = BinaryPoll.class;
+        } else if (view == findViewById(R.id.sliderpollbutton)) {
+        	c = SliderPoll.class;
+        }*/ else if (view == findViewById(R.id.picturepollbutton)) {
+        	c = PicturePoll.class;
+        }
+        startActivity(new Intent(this, c));
     }
 
 
