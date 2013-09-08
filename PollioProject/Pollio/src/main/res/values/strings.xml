@@ -11,5 +11,7 @@
     <string name="friend_pollios">Friend Pollios</string>
     <string name="public_pollios">Public Pollios</string>
 
+    <string name="poll_question">Enter a Question</string>
+    <string name="mc_poll_name">Multiple Choice Poll</string>
 
 </resources>

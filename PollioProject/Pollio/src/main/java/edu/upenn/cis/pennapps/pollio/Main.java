@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -29,6 +30,12 @@ public class Main extends Activity {
         setContentView(R.layout.activity_main);
 
 
+    }
+
+    public void newPoll(View view)
+    {
+        Intent i = new Intent(this, Mc_poll.class);
+        startActivity(i);
     }
 
 
