@@ -57,5 +57,6 @@
 			);
         </item>
     </string-array>
+    <string name="server">158.130.62.140:8000</string>
 
 </resources>
