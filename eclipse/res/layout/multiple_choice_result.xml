@@ -4,4 +4,198 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Question:"
+        android:id="@+id/question_label"
+        android:layout_gravity="center"
+        android:textSize="30dp"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="0dp" />
+
+    <TextView
+        android:id="@+id/question"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:background="#d1e8cc"
+        android:gravity="center_horizontal"
+        android:padding="5dp"
+        android:text="New Text"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Results:"
+        android:id="@+id/results"
+        android:layout_gravity="center"
+        android:textSize="30dp"
+        android:textAlignment="center"
+        android:gravity="center_horizontal" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:minHeight="50dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/percent0"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1.5
+            "
+            android:background="#d1e8cc"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:text="100%"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/po0"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_weight="5"
+            android:background="#d1e8cc"
+            android:gravity="fill_vertical"
+            android:padding="10dp"
+            android:text="New Text"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:minHeight="50dp"
+        android:gravity="center_horizontal"
+        android:id="@+id/linearLayout">
+
+        <TextView
+            android:id="@+id/percent1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1.5
+            "
+            android:background="#d1e8cc"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:text="50%"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/po1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_weight="5"
+            android:background="#d1e8cc"
+            android:gravity="fill_vertical"
+            android:padding="10dp"
+            android:text="New Text"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:minHeight="50dp"
+        android:gravity="center_horizontal"
+        android:id="@+id/linearLayout2" >
+
+        <TextView
+            android:id="@+id/percent2"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1.5
+            "
+            android:background="#d1e8cc"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:text="50%"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/po2"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_weight="5"
+            android:background="#d1e8cc"
+            android:gravity="fill_vertical"
+            android:padding="10dp"
+            android:text="New Text"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:minHeight="50dp"
+        android:gravity="center_horizontal"
+        android:id="@+id/linearLayout3" >
+
+        <TextView
+            android:id="@+id/percent3"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1.5
+            "
+            android:background="#d1e8cc"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:text="50%"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/po3"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_weight="5"
+            android:background="#d1e8cc"
+            android:gravity="fill_vertical"
+            android:padding="10dp"
+            android:text="New Text"
+            android:textSize="15sp" />
+
+    </LinearLayout>
 </LinearLayout>

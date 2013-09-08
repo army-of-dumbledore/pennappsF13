@@ -30,13 +30,14 @@
         </activity>
         
         <activity
-            android:name="edu.upenn.seas.pennapps.dumbledore.pollio.DemoActivity"
+            android:name="edu.upenn.seas.pennapps.dumbledore.pollio.GCMUtils"
             android:label="Demo Activity" >
         </activity>
             
         <activity
             android:name="edu.upenn.seas.pennapps.dumbledore.pollio.NewPollActivity"
-            android:label="New Poll" >
+            android:label="New Poll"
+            android:noHistory="true" >
             
         </activity>
         
@@ -69,7 +70,8 @@
         <activity android:name=".BinaryPoll"
             android:label="@string/app_name"/>
         <activity android:name=".MultipleChoiceResult"
-            android:label="@string/app_name"/>
+            android:label="@string/app_name"
+            android:noHistory="true"/>
         <activity android:name=".PictureResult"
             android:label="@string/app_name"/>
         <activity android:name=".SlideBarResult"

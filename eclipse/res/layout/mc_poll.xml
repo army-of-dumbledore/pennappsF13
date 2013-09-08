@@ -1,42 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:orientation="vertical"
-              android:id="@+id/mc_poll_layout"
-        >
-
+    android:id="@+id/mc_poll_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
     <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:background="#5f5f5f">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
 
         <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Enter a Question:"
                 android:id="@+id/textView"
                 android:layout_gravity="center"
                 android:gravity="center_horizontal"
-                android:textColor="@android:color/white"
                 android:textSize="28dp"
                 android:layout_margin="10dp"
                 android:layout_marginLeft="40dp"/>
 
         <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="42dp"
-                android:inputType="textImeMultiLine"
-                android:ems="10"
-                android:id="@+id/editText"
-                android:password="false"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:background="@android:color/holo_green_light"/>
+            android:id="@+id/question"
+            android:layout_width="fill_parent"
+            android:layout_height="42dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:background="#d1e8cc"
+            android:ems="10"
+            android:inputType="textImeMultiLine"
+            android:password="false" />
 
         <TextView
                 android:layout_width="fill_parent"
@@ -46,79 +40,75 @@
                 android:id="@+id/textView2"
                 android:layout_gravity="center"
                 android:gravity="center_horizontal"
-                android:textColor="@android:color/white"
                 android:textSize="28dp"
                 android:layout_marginTop="10dp"
                 android:layout_margin="10dp"/>
 
         <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="42dp"
-                android:inputType="textImeMultiLine"
-                android:ems="10"
-                android:id="@+id/poll_option1"
-                android:password="false"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:background="@android:color/holo_green_light"
-                android:imeOptions="actionDone"
-                android:layout_marginTop="10dp"
-                android:layout_margin="10dp"
-                />
+            android:id="@+id/poll_option1"
+            android:layout_width="fill_parent"
+            android:layout_height="42dp"
+            android:layout_margin="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp"
+            android:background="#d1e8cc"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="textImeMultiLine"
+            android:password="false" />
 
         <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="42dp"
-                android:inputType="textImeMultiLine"
-                android:ems="10"
-                android:id="@+id/poll_option2"
-                android:password="false"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:background="@android:color/holo_green_light"
-                android:imeOptions="actionDone"
-                android:layout_marginTop="10dp"
-                android:layout_margin="10dp"
-                />
+            android:id="@+id/poll_option2"
+            android:layout_width="fill_parent"
+            android:layout_height="42dp"
+            android:layout_margin="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp"
+            android:background="#d1e8cc"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="textImeMultiLine"
+            android:password="false" />
+
         <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="42dp"
-                android:inputType="textImeMultiLine"
-                android:ems="10"
-                android:id="@+id/poll_option3"
-                android:password="false"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:background="@android:color/holo_green_light"
-                android:imeOptions="actionDone"
-                android:layout_marginTop="10dp"
-                android:layout_margin="10dp"
-                />
+            android:id="@+id/poll_option3"
+            android:layout_width="fill_parent"
+            android:layout_height="42dp"
+            android:layout_margin="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp"
+            android:background="#d1e8cc"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="textImeMultiLine"
+            android:password="false" />
+
         <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="42dp"
-                android:inputType="textImeMultiLine"
-                android:ems="10"
-                android:id="@+id/poll_option4"
-                android:password="false"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:background="@android:color/holo_green_light"
-                android:imeOptions="actionDone"
-                android:layout_marginTop="10dp"
-                android:layout_margin="10dp"
-                />
+            android:id="@+id/poll_option4"
+            android:layout_width="fill_parent"
+            android:layout_height="42dp"
+            android:layout_margin="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp"
+            android:background="#d1e8cc"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="textImeMultiLine"
+            android:password="false" />
 
         <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Poll"
-                android:id="@+id/button"
-                android:layout_gravity="center"
-                android:background="@android:color/holo_green_light"
-                android:singleLine="true"
-                android:onClick="mc_poll_done"/>
-
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#d1e8cc"
+            android:onClick="mc_poll_done"
+            android:singleLine="true"
+            android:text="Poll" />
 
     </LinearLayout>
 </LinearLayout>

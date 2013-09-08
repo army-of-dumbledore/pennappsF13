@@ -1,4 +1,4 @@
-package edu.upenn.cis.pennapps.pollio;
+package edu.upenn.seas.pennapps.dumbledore.pollio;
 
 import java.util.Locale;
 
@@ -29,12 +29,13 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        Utils.setUserId(this, "");
+        GCMUtils.initGCM(this);
     }
 
     public void newPoll(View view)
     {
-        Intent i = new Intent(this, MultipleChoicePoll.class);
+        Intent i = new Intent(this, NewPollActivity.class);
         startActivity(i);
     }
 

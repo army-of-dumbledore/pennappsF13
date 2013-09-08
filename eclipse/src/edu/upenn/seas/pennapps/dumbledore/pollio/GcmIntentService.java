@@ -2,6 +2,7 @@ package edu.upenn.seas.pennapps.dumbledore.pollio;
 
 import java.io.Serializable;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -58,28 +59,63 @@ public class GcmIntentService extends IntentService {
                
                 if (extras.getString("command").trim().equals("results")) {
                 	
-                	Intent another_intent = new Intent(this, DemoActivity.class);
-                	another_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // yes that's what I really want!
-                	another_intent.putExtra("data", extras);
-                	Log.i(TAG, "launching...");
-                	startActivity(another_intent);
+                	final String pollid = extras.getString("poll_id");
+                	final String sender = extras.getString("user_id");
+                	final GcmIntentService that = this;
+                	
+                	new AsyncTask<Void, Void, JSONObject>() {
+            			@Override
+            			protected JSONObject doInBackground(Void... params) {
+            				JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/request_results/",
+            															 "user_id", Utils.getUserId(getApplicationContext()),
+            															 "poll_id", pollid);
+            				
+            				
+            				try {
+            					json.put("poll_id", pollid);
+								json.put("sender", sender);
+							} catch (JSONException e) {
+								Log.e(TAG, "This can't happen");
+							}
+            				
+            				return json;
+            			}
+            			
+            			@Override
+            			protected void onPostExecute(JSONObject msg) {
+            				Intent another_intent = new Intent(that, MultipleChoiceResult.class);
+                        	another_intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // yes that's what I really want!
+                        	another_intent.putExtra("json", msg.toString());
+                        	Log.i(TAG, "launching...");
+                        	startActivity(another_intent);
+            			}
+            		}.execute(null, null, null);
 
                 } else if (extras.getString("command").trim().equals("poll")) {
                 	
                 	final String pollid = extras.getString("poll_id");
+                	final String owner = extras.getString("owner");
                 	final GcmIntentService that = this;
                 	new AsyncTask<Void, Void, JSONObject>() {
                 		@Override
                 		protected JSONObject doInBackground(Void... params) {
-                			return InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/request_poll/",
-                														 "poll_id", "pollid");
+                			JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/request_poll/",
+                														 "poll_id", pollid);
+                			try {
+								json.put("poll_id", pollid);
+								json.put("owner", owner);
+							} catch (JSONException e) {
+								Log.e(TAG, "JSONE: " + e.getMessage());
+							}
+                			
+                			return json;
                 		}
                 		
                 		@Override
                 		protected void onPostExecute(JSONObject msg) {
                 			Intent i = new Intent(that, MultipleChoiceRequest.class);
                 			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                			i.putExtra("json", (Serializable)msg);
+                			i.putExtra("json", msg.toString());
                 			startActivity(i);
                 		}
                 	}.execute(null, null, null);
@@ -99,7 +135,7 @@ public class GcmIntentService extends IntentService {
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, DemoActivity.class), 0);
+                new Intent(this, GCMUtils.class), 0);
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
