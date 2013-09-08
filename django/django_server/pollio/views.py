@@ -6,19 +6,21 @@ import datetime
 import urllib2
 import json
 
-
-regid = 'APA91bE1FWvX9PR0jyoGAAjJ6FWwqyfbH-NJbIqmwes6Bs-4yQc5wgNFAgA47dPbuHmyBgMdLoNumVInzsLsh7iJbe8tGgFPyypsXu4OZY177iBIsslGO2tmgL45EF2SHHhxhI3MJlLglbmsm0o5mTUMRap__rIzGQuEnkoRBwH9Xknpk3ovwZAnzKiGDr2D8fS9N1awqsMZ'
-
 def index(request):
     return HttpResponse(json.dumps({'somestuff': 0, 'something':'crapcrapcrap', 'otherthing':':-)'}))
 
 def initialize(request):
-    u = User(name=request.REQUEST['name'], registration_id=request.REQUEST['reg_id'])
-    u.save()
-    url = 'https://android.googleapis.com/gcm/send'
-    data = json.dumps({'registration_ids':[u.registration_id], 'dry-run' : False, 'data' : {'command' : 'init_conf'}})
-    req = urllib2.Request(url, data, {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'})
-    result = json.loads(urllib2.urlopen(req).read())
+    n=request.REQUEST['name']
+    r=request.REQUEST['reg_id']
+    try:
+        u = User.objects.get(registration_id=r)
+    except User.DoesNotExist:
+    	u = User(name=n, registration_id=r)
+    	u.save()
+    	url = 'https://android.googleapis.com/gcm/send'
+    	data = json.dumps({'registration_ids':[u.registration_id], 'dry-run' : False, 'data' : {'command' : 'init_conf'}})
+    	req = urllib2.Request(url, data, {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'})
+    	result = json.loads(urllib2.urlopen(req).read())
     return HttpResponse(json.dumps({'user_id' : u.id}))
 
 def new_poll(request): 
@@ -28,17 +30,19 @@ def new_poll(request):
     pollees=request.REQUEST['pollees']
     p = Poll(owner=User.objects.get(id=user), question=question, pub_date=datetime.datetime.now(), results_pending=False)
     p.save()
-    for choice in choices.split('|'):
+    for choice in choices.strip('|').split('|'):
         p.choice_set.create(choice=choice, votes=0)
-    for pollee in pollees.split('|'):
+    for pollee in pollees.strip('|').split('|'):
+	if pollee == user : continue
         p.pollees.add(User.objects.get(id=pollee))
     p.save()
     header = {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'}
     for pollee in p.pollees.all():
         url = 'https://android.googleapis.com/gcm/send'
-        data = json.dumps({'registration_ids':[pollee.registration_id], 'dry-run' : True, 'data' : {'command' : 'poll', 'poll_id' : p.id}})
+        data = json.dumps({'registration_ids':[pollee.registration_id], 'dry-run' : False, 'data' : {'command' : 'poll', 'poll_id' : p.id, 'owner' : p.owner.name}})
         req = urllib2.Request(url, data, header)
         result = json.loads(urllib2.urlopen(req).read())
+	print 'pushing to', pollee, result
     return HttpResponse(json.dumps({'poll_id': p.id}))
 
 def request_poll(request):
@@ -49,7 +53,10 @@ def request_poll(request):
         raise Http404
     response = {}
     response['question'] = p.question
-    for choice in p.choice_set.all(): response['choice_%d'%choice.pk] = choice.choice
+    response['type'] = 'mc' 
+    response['choices'] = [] 
+    for choice in p.choice_set.all(): 
+	response['choices'].append({'id' : choice.pk, 'text' : choice.choice})
     return HttpResponse(json.dumps(response))
 
 def request_results(request):
@@ -59,8 +66,10 @@ def request_results(request):
     except Poll.DoesNotExist:
         raise Http404
     response = {}
+    response['question'] = p.question
+    response['choices'] = [] 
     for choice in p.choice_set.all(): 
-	response[choice.choice] = {'count' : choice.votes, 'backers' : [u.id for u in choice.backers.all()]}
+	response['choices'].append({'text' : choice.choice, 'count' : choice.votes, 'backers' : [u.id for u in choice.backers.all()]})
     p.results_pending = False
     return HttpResponse(json.dumps(response))
 
@@ -80,7 +89,7 @@ def submit_vote(request):
 	p.results_pending = True
     	url = 'https://android.googleapis.com/gcm/send'
     	header = {'Content-Type': 'application/json', 'Authorization': 'key=AIzaSyAtdsjZg81RipQY_4mreAEbiJPcT3iRtIA'}
-    	data = json.dumps({'registration_ids':[regid], 'dry-run' : False, 'data' : {'command' : 'results', 'poll_id' : poll_id}})
+    	data = json.dumps({'registration_ids':[p.owner.registration_id], 'dry-run' : False, 'data' : {'command' : 'results', 'poll_id' : poll_id, 'owner' : User.objects.get(id=user).name}})
     	req = urllib2.Request(url, data, header)
     	result = json.loads(urllib2.urlopen(req).read())
     return HttpResponse(json.dumps({'success' : 0}))
