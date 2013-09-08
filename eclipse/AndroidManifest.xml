@@ -30,7 +30,7 @@
         </activity>
         
         <activity
-            android:name="edu.upenn.seas.pennapps.dumbledore.pollio.DemoActivity"
+            android:name="edu.upenn.seas.pennapps.dumbledore.pollio.GCMUtils"
             android:label="Demo Activity" >
         </activity>
             
