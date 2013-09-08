@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+import android.widget.RadioButton;
+import android.widget.TextView;
 
 /**
  * Created by alexsalz1 on 9/7/13.
@@ -46,8 +48,25 @@ public class MultipleChoiceRequest extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        //question text
+        TextView questionText = (TextView) findViewById(R.id.question);
         
-        //vote button stuffs
+        //vote buttons
+        RadioButton but0 = (RadioButton) findViewById(R.id.mc0);
+        RadioButton but1 = (RadioButton) findViewById(R.id.mc0);
+        RadioButton but2 = (RadioButton) findViewById(R.id.mc0);
+        RadioButton but3 = (RadioButton) findViewById(R.id.mc0);
+        but0.setVisibility(View.GONE);
+        but1.setVisibility(View.GONE);
+        but2.setVisibility(View.GONE);
+        but3.setVisibility(View.GONE);
+        RadioButton[] buttons = {but0, but1, but2, but3}; 
+        int numButtons = ids.size();
+        for(int i=0; i<numButtons; i++)
+        {
+        	buttons[i].setVisibility(View.VISIBLE);
+        	buttons[i].setText(texts.get(i));
+        }
         
     }
     
