@@ -34,7 +34,7 @@ public class Main extends Activity {
 
     public void newPoll(View view)
     {
-        Intent i = new Intent(this, Mc_poll.class);
+        Intent i = new Intent(this, NewPollActivity.class);
         startActivity(i);
     }
 

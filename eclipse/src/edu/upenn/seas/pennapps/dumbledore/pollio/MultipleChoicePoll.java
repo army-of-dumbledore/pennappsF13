@@ -18,7 +18,7 @@ import android.widget.Toast;
 /**
  * Created by joe on 9/7/13.
  */
-public class Mc_poll extends Activity {
+public class MultipleChoicePoll extends Activity {
 
     EditText po1, po2, po3, po4;
     public void onCreate(Bundle savedInstanceState) {

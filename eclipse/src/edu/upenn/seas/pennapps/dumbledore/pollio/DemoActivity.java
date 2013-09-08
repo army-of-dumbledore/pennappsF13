@@ -53,11 +53,7 @@ public class DemoActivity extends Activity {
      * from the API Console, as described in "Getting Started."
      */
     String SENDER_ID = "1033493645859";
-    
-    /** IP/URL of the server
-     *
-     */
-    String SERVER = "158.130.62.140:8000";
+
 
     /**
      * Tag used on log messages.
@@ -96,17 +92,17 @@ public class DemoActivity extends Activity {
             regid = getRegistrationId(context);
             userid = getUserId();
 
-            if (regid.isEmpty()) {
+            if (regid.equals("")) {
                 registerInBackground();
             } else {
             	mDisplay.append("saved gcm id: " + regid + "\n");
             }
         
-            if (userid.isEmpty()) {
+            if (userid.equals("")) {
 	        	new AsyncTask<Void, Void, String>() {
 	        		@Override
 	        		protected String doInBackground(Void... params) {
-	        			JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/initialize/",
+	        			JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/initialize/",
 	                            "name", "Reuven Rand",
 	                            "reg_id", regid);
 	        			try {
@@ -139,7 +135,7 @@ public class DemoActivity extends Activity {
         		new AsyncTask<Void, Void, String>() {
         			@Override
         			protected String doInBackground(Void... params) {
-        				JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/request_results/",
+        				JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/request_results/",
         															 "user_id", userid,
         															 "poll_id", stuff.getString("poll_id"));
         				
@@ -165,7 +161,7 @@ public class DemoActivity extends Activity {
     			@Override
     			protected String doInBackground(Void... params) {
     				
-    				JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/new_poll/",
+    				JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/new_poll/",
     															 "user_id", userid,
     															 "question", "What color is your parachute?",
     															 "choices", "red|green|blue",
@@ -184,7 +180,7 @@ public class DemoActivity extends Activity {
                 @Override
                 protected String doInBackground(Void... params) {
                     
-                	JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/submit_vote/",
+                	JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/submit_vote/",
                 												 "user_id", userid,
                 												 "poll_id", "1",
                 												 "choice_id", "2");
@@ -258,7 +254,7 @@ public class DemoActivity extends Activity {
     private String getRegistrationId(Context context) {
         final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
-        if (registrationId.isEmpty()) {
+        if (registrationId.equals("")) {
             Log.i(TAG, "Registration not found.");
             return "";
         }
@@ -332,7 +328,7 @@ public class DemoActivity extends Activity {
                     // The request to your server should be authenticated if your app
                     // is using accounts.
                     //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-                    JSONObject json = InternetUtils.json_request("http://" + SERVER + "/polls/initialize",
+                    JSONObject json = InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/initialize",
                     		                                     "name", "Alex Burka",
                     		                                     "reg_id", regid);
 

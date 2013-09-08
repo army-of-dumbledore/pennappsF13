@@ -1,5 +1,9 @@
 package edu.upenn.seas.pennapps.dumbledore.pollio;
 
+import java.io.Serializable;
+
+import org.json.JSONObject;
+
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import android.app.IntentService;
@@ -7,6 +11,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
@@ -59,6 +64,26 @@ public class GcmIntentService extends IntentService {
                 	Log.i(TAG, "launching...");
                 	startActivity(another_intent);
 
+                } else if (extras.getString("command").trim().equals("poll")) {
+                	
+                	final String pollid = extras.getString("poll_id");
+                	final GcmIntentService that = this;
+                	new AsyncTask<Void, Void, JSONObject>() {
+                		@Override
+                		protected JSONObject doInBackground(Void... params) {
+                			return InternetUtils.json_request("http://" + getResources().getString(R.string.server) + "/polls/request_poll/",
+                														 "poll_id", "pollid");
+                		}
+                		
+                		@Override
+                		protected void onPostExecute(JSONObject msg) {
+                			Intent i = new Intent(that, MultipleChoiceRequest.class);
+                			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                			i.putExtra("json", (Serializable)msg);
+                			startActivity(i);
+                		}
+                	}.execute(null, null, null);
+                	
                 }
             }
         }

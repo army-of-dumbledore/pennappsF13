@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Created by joe on 9/7/13.
  */
-public class Picture_poll extends Activity {
+public class PicturePoll extends Activity {
     private static final int CAMERA_REQUEST = 1888;
     String JPEG_FILE_PREFIX = "po";
     String JPEG_FILE_SUFFIX = ".jpg";
