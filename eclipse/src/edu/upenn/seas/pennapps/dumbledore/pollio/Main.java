@@ -1,4 +1,4 @@
-package edu.upenn.seas.pennapps.dumbledore.pollio;
+package edu.upenn.cis.pennapps.pollio;
 
 import java.util.Locale;
 
@@ -34,8 +34,18 @@ public class Main extends Activity {
 
     public void newPoll(View view)
     {
-        Intent i = new Intent(this, NewPollActivity.class);
+        Intent i = new Intent(this, MultipleChoicePoll.class);
         startActivity(i);
+    }
+
+    public void TakePollio(View view)
+    {
+
+    }
+
+    public void ShowMyPollio(View view)
+    {
+
     }
 
 
